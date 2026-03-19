@@ -1,7 +1,7 @@
 {
   "models": [
     {
-      "base_population": 10000000,
+      "base_population": 9000000,
       "ratios": [
         1.0,
         0.35,
@@ -51,7 +51,7 @@
         true
       ],
       "stage_names": [
-        "Total Addressable Market for MASH",
+        "TAM",
         "F2 and F3",
         "MASH patients diagnosed",
         "Madrigal access to MASH patients",
@@ -69,13 +69,13 @@
         "dario_connect_config": 500000.0,
         "dario_care_config": 500000.0,
         "sub_dario_connect": 1000000.0,
-        "sub_dario_care": 280000.0,
+        "sub_dario_care": 250000.0,
         "maintenance_support": 250000.0
       },
       "phased_enabled": false
     }
   ],
   "model_names": [
-    "Model 1"
+    "1"
   ]
 }
