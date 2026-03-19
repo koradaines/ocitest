@@ -1,0 +1,156 @@
+{
+  "models": [
+    {
+      "base_population": 9000000,
+      "ratios": [
+        1.0,
+        0.35,
+        0.16,
+        0.22,
+        0.75,
+        0.4,
+        0.15,
+        0.8,
+        1.0,
+        0.75,
+        0.9,
+        0.5,
+        0.9
+      ],
+      "cac": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0,
+        67.0,
+        83.0,
+        83.0,
+        111.0,
+        123.0,
+        247.0,
+        274.0
+      ],
+      "arpp": 47400.0,
+      "treatment_years": 1.0,
+      "discount": 0.68,
+      "stage_active": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "stage_names": [
+        "TAM",
+        "F2 and F3",
+        "MASH patients diagnosed",
+        "Madrigal access to MASH patients",
+        "Frequent users of online and social media resources",
+        "Activation within 90 days mo onto Dario Connect for MASH",
+        "Schedule telemedicine appointment",
+        "Keep telemedicine appointment",
+        "Obtain prescription for biopsy",
+        "Get biopsy lab test",
+        "Get positive lab results",
+        "Complete post lab result consultation",
+        "Get prescription for Rezdiffra"
+      ],
+      "platform_costs": {
+        "dario_connect_config": 500000.0,
+        "dario_care_config": 500000.0,
+        "sub_dario_connect": 1000000.0,
+        "sub_dario_care": 250000.0,
+        "maintenance_support": 250000.0
+      },
+      "phased_enabled": false
+    },
+    {
+      "base_population": 10000000,
+      "ratios": [
+        1.0,
+        0.35,
+        0.16,
+        0.22,
+        0.75,
+        0.4,
+        0.15,
+        0.8,
+        1.0,
+        0.75,
+        0.9,
+        0.5,
+        0.9
+      ],
+      "cac": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0,
+        67.0,
+        83.0,
+        83.0,
+        111.0,
+        123.0,
+        247.0,
+        274.0
+      ],
+      "arpp": 47400.0,
+      "treatment_years": 1.0,
+      "discount": 0.68,
+      "stage_active": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "stage_names": [
+        "Total Addressable Market for MASH",
+        "F2 and F3",
+        "MASH patients diagnosed",
+        "Madrigal access to MASH patients",
+        "Frequent users of online and social media resources",
+        "Activation within 90 days mo onto Dario Connect for MASH",
+        "Schedule telemedicine appointment",
+        "Keep telemedicine appointment",
+        "Obtain prescription for biopsy",
+        "Get biopsy lab test",
+        "Get positive lab results",
+        "Complete post lab result consultation",
+        "Get prescription for Rezdiffra"
+      ],
+      "platform_costs": {
+        "dario_connect_config": 500000.0,
+        "dario_care_config": 500000.0,
+        "sub_dario_connect": 1000000.0,
+        "sub_dario_care": 250000.0,
+        "maintenance_support": 250000.0
+      },
+      "phased_enabled": false
+    }
+  ],
+  "model_names": [
+    "1",
+    "Model 2"
+  ]
+}
