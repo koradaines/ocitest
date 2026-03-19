@@ -672,16 +672,24 @@ def build_simple_excel(df, sheet_name="Data"):
 # -----------------------------
 def init_session():
     if "models" not in st.session_state:
-        st.session_state["models"] = [copy.deepcopy(SPONSOR_DEFAULTS)]
+        st.session_state["models"] = [copy.deepcopy(ZERO_SAMPLE)]
         st.session_state["model_names"] = ["Model 1"]
         st.session_state["active_model_idx"] = 0
+    # Active client tracking
+    if "active_client_name" not in st.session_state:
+        st.session_state["active_client_name"] = None   # None = unsaved new session
     # Storage UI state
     if "storage_client_list" not in st.session_state:
-        st.session_state["storage_client_list"] = None   # None = not yet fetched
+        st.session_state["storage_client_list"] = None
     if "storage_feedback" not in st.session_state:
         st.session_state["storage_feedback"] = None
     if "confirm_delete_client" not in st.session_state:
         st.session_state["confirm_delete_client"] = False
+    # New client flow state
+    if "confirm_new_client" not in st.session_state:
+        st.session_state["confirm_new_client"] = False
+    if "pending_new_client_name" not in st.session_state:
+        st.session_state["pending_new_client_name"] = ""
 
 init_session()
 
@@ -695,7 +703,54 @@ st.set_page_config(page_title="PharmaROI V3 — Multi-Model", page_icon="📈", 
 # ==============================
 with st.sidebar:
     st.markdown("## 💾 Client Files")
-    st.caption("Save or load a full set of models under a named client file.")
+
+    # ── Active client indicator ──────────────────────────────────────────────
+    active = st.session_state["active_client_name"]
+    if active:
+        st.success(f"📂 Active: **{active}**")
+    else:
+        st.warning("⚪ New unsaved session")
+
+    st.divider()
+
+    # ── NEW CLIENT section ───────────────────────────────────────────────────
+    st.markdown("### ✨ New Client")
+
+    if not st.session_state["confirm_new_client"]:
+        new_client_name = st.text_input(
+            "New client name",
+            placeholder="e.g. Sanofi",
+            key="new_client_name_input",
+            label_visibility="collapsed",
+        )
+        if st.button("➕ Create New Client", use_container_width=True, disabled=not new_client_name.strip()):
+            st.session_state["pending_new_client_name"] = new_client_name.strip()
+            st.session_state["confirm_new_client"] = True
+            st.rerun()
+    else:
+        pending = st.session_state["pending_new_client_name"]
+        st.warning(
+            f"Start a new session for **{pending}**?\n\n"
+            f"Any unsaved work will be lost."
+        )
+        nc_col1, nc_col2 = st.columns(2)
+        with nc_col1:
+            if st.button("Yes, Start Fresh", use_container_width=True, type="primary"):
+                st.session_state["models"] = [copy.deepcopy(ZERO_SAMPLE)]
+                st.session_state["model_names"] = ["Model 1"]
+                st.session_state["active_model_idx"] = 0
+                st.session_state["active_client_name"] = pending
+                st.session_state["storage_feedback"] = f"✨ New session started for **{pending}**"
+                st.session_state["confirm_new_client"] = False
+                st.session_state["pending_new_client_name"] = ""
+                st.rerun()
+        with nc_col2:
+            if st.button("Cancel", use_container_width=True):
+                st.session_state["confirm_new_client"] = False
+                st.session_state["pending_new_client_name"] = ""
+                st.rerun()
+
+    st.divider()
 
     # ── Refresh client list ──────────────────────────────────────────────────
     if st.button("🔄 Refresh Client List", use_container_width=True):
@@ -723,6 +778,7 @@ with st.sidebar:
                 st.session_state["models"] = payload["models"]
                 st.session_state["model_names"] = payload["model_names"]
                 st.session_state["active_model_idx"] = 0
+                st.session_state["active_client_name"] = selected_client
                 st.session_state["storage_feedback"] = f"✅ Loaded **{selected_client}**"
                 st.rerun()
     else:
@@ -734,6 +790,7 @@ with st.sidebar:
     st.markdown("### Save Current Work")
     save_name = st.text_input(
         "Client name",
+        value=st.session_state["active_client_name"] or "",
         placeholder="e.g. Sanofi",
         key="sidebar_save_name",
         label_visibility="collapsed",
@@ -746,6 +803,7 @@ with st.sidebar:
         ok = gs.save_client(save_name.strip(), payload)
         if ok:
             st.session_state["storage_client_list"] = gs.list_clients()
+            st.session_state["active_client_name"] = save_name.strip()
             st.session_state["storage_feedback"] = f"✅ Saved as **{save_name.strip()}**"
             st.rerun()
 
@@ -840,6 +898,7 @@ with st.sidebar:
                         st.session_state["models"] = payload["models"]
                         st.session_state["model_names"] = payload["model_names"]
                         st.session_state["active_model_idx"] = 0
+                        st.session_state["active_client_name"] = uploaded_file.name.replace(".json", "")
                         st.session_state["storage_feedback"] = f"✅ Loaded from **{uploaded_file.name}**"
                         st.rerun()
                     else:
@@ -855,6 +914,22 @@ with st.sidebar:
 # Page title
 # -----------------------------
 st.title("PharmaROI Intelligence — V3 (Multi-Model Comparison)")
+
+_active = st.session_state.get("active_client_name")
+if _active:
+    st.markdown(
+        f"<div style='display:inline-block; background:#0F6CBD18; border:1px solid #0F6CBD55; "
+        f"border-radius:6px; padding:4px 14px; margin-bottom:6px;'>"
+        f"📂 <strong>Active Client:</strong> {_active}</div>",
+        unsafe_allow_html=True,
+    )
+else:
+    st.markdown(
+        "<div style='display:inline-block; background:#F59E0B18; border:1px solid #F59E0B55; "
+        "border-radius:6px; padding:4px 14px; margin-bottom:6px;'>"
+        "⚪ <strong>New unsaved session</strong> — use the sidebar to name and save your work.</div>",
+        unsafe_allow_html=True,
+    )
 st.caption("Build multiple ROI models side-by-side and compare them in the Comparison tab.")
 
 # -----------------------------
