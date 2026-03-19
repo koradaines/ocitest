@@ -782,6 +782,71 @@ with st.sidebar:
     else:
         st.caption("No clients to manage.")
 
+    st.divider()
+
+    # ── LOCAL FILE section ───────────────────────────────────────────────────
+    with st.expander("📁 Local File Import / Export", expanded=False):
+        st.caption("Download your current session as a JSON file, or upload a previously saved one.")
+
+        # ── Download JSON ────────────────────────────────────────────────────
+        st.markdown("**Download current session**")
+        local_download_name = st.text_input(
+            "File name (no extension)",
+            placeholder="e.g. Sanofi_backup",
+            key="local_download_name",
+            label_visibility="collapsed",
+        )
+        if local_download_name.strip():
+            local_payload = {
+                "models": st.session_state["models"],
+                "model_names": st.session_state["model_names"],
+            }
+            import json as _json
+            json_bytes = _json.dumps(local_payload, indent=2).encode("utf-8")
+            st.download_button(
+                "⬇️ Download as JSON",
+                data=json_bytes,
+                file_name=f"{local_download_name.strip()}.json",
+                mime="application/json",
+                use_container_width=True,
+                key="local_json_download",
+            )
+        else:
+            st.button(
+                "⬇️ Download as JSON",
+                disabled=True,
+                use_container_width=True,
+                key="local_json_download_disabled",
+                help="Enter a file name above to enable download",
+            )
+
+        st.divider()
+
+        # ── Upload JSON ──────────────────────────────────────────────────────
+        st.markdown("**Upload a saved JSON file**")
+        st.caption("This will replace all current models with the contents of the file.")
+        uploaded_file = st.file_uploader(
+            "Choose a JSON file",
+            type=["json"],
+            key="local_json_upload",
+            label_visibility="collapsed",
+        )
+        if uploaded_file is not None:
+            if st.button("📂 Load from File", use_container_width=True):
+                try:
+                    import json as _json
+                    payload = _json.loads(uploaded_file.read().decode("utf-8"))
+                    if "models" in payload and "model_names" in payload:
+                        st.session_state["models"] = payload["models"]
+                        st.session_state["model_names"] = payload["model_names"]
+                        st.session_state["active_model_idx"] = 0
+                        st.session_state["storage_feedback"] = f"✅ Loaded from **{uploaded_file.name}**"
+                        st.rerun()
+                    else:
+                        st.error("Invalid file format — make sure this is a PharmaROI JSON export.")
+                except Exception as e:
+                    st.error(f"Could not read file: {e}")
+
     # ── Feedback banner ──────────────────────────────────────────────────────
     if st.session_state["storage_feedback"]:
         st.success(st.session_state["storage_feedback"])
